@@ -1,28 +1,28 @@
-msbuild:
-    runs-on: ${{ matrix.os }}
+name: Windows
+
+on: [push, pull_request, workflow_dispatch] # workflow_dispatch ti permette di farlo partire a mano
+
+jobs:
+  msbuild:
+    runs-on: windows-2022
     strategy:
       matrix:
-        os: [windows-2022] # Windows 2025 è ancora molto nuovo, 2022 è più stabile per Osiris
-        toolset: [MSVC]
         configuration: [Release]
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v2
+      - uses: actions/checkout@v4
+      
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Build
-      shell: cmd
-      run: msbuild Osiris.sln /p:Platform=x64 /p:Configuration=${{ matrix.configuration }}
+      - name: Build
+        shell: cmd
+        run: msbuild Osiris.sln /p:Platform=x64 /p:Configuration=${{ matrix.configuration }}
 
-    # AGGIUNGI QUESTO PEZZO QUI SOTTO:
-    - name: Upload Osiris DLL
-      uses: actions/upload-artifact@v4
-      with:
-        name: Osiris-${{ matrix.os }}-${{ matrix.configuration }}
-        path: |
-           build/x64/Release/Osiris.dll
-           bin/x64/Release/Osiris.dll
-           x64/Release/Osiris.dll
-        # Ho messo più percorsi perché Osiris cambia cartella di output a seconda della versione. 
-        # GitHub prenderà quello che trova.
+      - name: Upload Osiris DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: Osiris-Release
+          path: |
+            build/x64/Release/Osiris.dll
+            bin/x64/Release/Osiris.dll
+            x64/Release/Osiris.dll
